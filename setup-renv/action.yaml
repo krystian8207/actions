@@ -29,6 +29,8 @@ runs:
 
       - name: Print homedir from R
         run: |
+          renv::paths$cache()
+          list.dirs(renv::paths$cache())
           system("echo ~/")
           system("echo $HOME")
           getwd()
@@ -44,6 +46,8 @@ runs:
       - name: Install renv dependencies
         run: |
           R -e 'install.packages("renv")'
+          R -e 'renv::paths$cache()'
+          R -e 'list.dirs(renv::paths$cache())'
           R -e 'renv::restore()'
         shell: bash
 

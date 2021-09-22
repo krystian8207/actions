@@ -11,8 +11,7 @@ runs:
   steps:
       - name: Install renv and query dependencies
         run: |
-          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          saveRDS(pak::pkg_deps("local::.", dependencies = TRUE), ".github/r-depends.rds")
+          install.packages("renv")
         shell: Rscript {0}
 
       - name: Get R and OS version
@@ -22,10 +21,21 @@ runs:
           cat("##[set-output name=r-version;]", R.Version()$version.string, sep = "")
         shell: Rscript {0}
 
+      - name: Print homedir
+        run: |
+          echo ~/
+          echo $HOME
+
+      - name: Print homedir from R
+        run: |
+          system("echo ~/")
+          system("echo $HOME")
+          getwd()
+
       - name: Restore Renv package cache
         uses: actions/cache@v2
         with:
-          path: $HOME/.local/share/renv
+          path: ~/.local/share/renv
           key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-${{ hashFiles('renv.lock') }}
           restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
 
@@ -34,7 +44,7 @@ runs:
           R -e 'install.packages("renv")'
           R -e 'renv::restore()'
         shell: bash
-        
+
       - name: Don't use tar 1.30 from Rtools35 to store the cache
         run: |
           if command -v /c/Rtools/bin/tar && /c/Rtools/bin/tar --version | grep -q 'tar (GNU tar) 1.30'

@@ -31,6 +31,7 @@ runs:
           system("echo ~/")
           system("echo $HOME")
           getwd()
+        shell: Rscript {0}
 
       - name: Restore Renv package cache
         uses: actions/cache@v2

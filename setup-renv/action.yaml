@@ -21,33 +21,15 @@ runs:
           cat("##[set-output name=r-version;]", R.Version()$version.string, sep = "")
         shell: Rscript {0}
 
-      - name: Print homedir
-        run: |
-          echo ~/
-          echo $HOME
-        shell: bash
-
-      - name: Print homedir from R
-        run: |
-          renv::paths$cache()
-          list.dirs(renv::paths$cache())
-          system("echo ~/")
-          system("echo $HOME")
-          getwd()
-        shell: Rscript {0}
-
       - name: Restore Renv package cache
         uses: actions/cache@v2
         with:
-          path: ~/.local/share/renv
+          path: ~/.cache/R/renv/cache
           key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-${{ hashFiles('renv.lock') }}
           restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
 
       - name: Install renv dependencies
         run: |
-          R -e 'install.packages("renv")'
-          R -e 'renv::paths$cache()'
-          R -e 'list.dirs(renv::paths$cache())'
           R -e 'renv::restore()'
         shell: bash
 
